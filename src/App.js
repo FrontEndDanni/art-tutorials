@@ -1,25 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import axios from 'axios';
+import SearchBar from './components/searchBar';
+import VideoList from './components/videoList';
+import './App.css'; 
 
-function App() {
+const App = () => {
+  const [videos, setVideos] = useState([]);
+
+  const handleSearch = async (term) => {
+    const response = await axios.get('https://www.googleapis.com/youtube/v3/search', {
+      params: {
+        part: 'snippet',
+        maxResults: 10,
+        q: term,
+        type: 'video',
+        key:  process.env.REACT_APP_YOUTUBE_API_KEY,
+      },
+    });
+    setVideos(response.data.items);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Virtual Art Classes</h1>
+      <SearchBar onSearch={handleSearch} />
+      <VideoList videos={videos} />
     </div>
   );
-}
+};
 
 export default App;
